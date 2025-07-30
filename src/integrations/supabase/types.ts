@@ -14,7 +14,138 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      jobs: {
+        Row: {
+          budget_max: number | null
+          budget_min: number | null
+          category: string
+          created_at: string
+          description: string
+          employer_contact: Json | null
+          employer_name: string | null
+          id: string
+          job_type: string
+          location: string | null
+          skills_required: string[] | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          budget_max?: number | null
+          budget_min?: number | null
+          category: string
+          created_at?: string
+          description: string
+          employer_contact?: Json | null
+          employer_name?: string | null
+          id?: string
+          job_type: string
+          location?: string | null
+          skills_required?: string[] | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          budget_max?: number | null
+          budget_min?: number | null
+          category?: string
+          created_at?: string
+          description?: string
+          employer_contact?: Json | null
+          employer_name?: string | null
+          id?: string
+          job_type?: string
+          location?: string | null
+          skills_required?: string[] | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          availability: string | null
+          category: string
+          contact_info: Json | null
+          created_at: string
+          description: string | null
+          email: string | null
+          experience_level: string | null
+          hourly_rate: number | null
+          id: string
+          location: string | null
+          name: string
+          portfolio_links: string[] | null
+          skills: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          availability?: string | null
+          category: string
+          contact_info?: Json | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          experience_level?: string | null
+          hourly_rate?: number | null
+          id?: string
+          location?: string | null
+          name: string
+          portfolio_links?: string[] | null
+          skills?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          availability?: string | null
+          category?: string
+          contact_info?: Json | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          experience_level?: string | null
+          hourly_rate?: number | null
+          id?: string
+          location?: string | null
+          name?: string
+          portfolio_links?: string[] | null
+          skills?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      website_content: {
+        Row: {
+          content: string | null
+          crawled_at: string
+          html_content: string | null
+          id: string
+          metadata: Json | null
+          title: string | null
+          url: string
+        }
+        Insert: {
+          content?: string | null
+          crawled_at?: string
+          html_content?: string | null
+          id?: string
+          metadata?: Json | null
+          title?: string | null
+          url: string
+        }
+        Update: {
+          content?: string | null
+          crawled_at?: string
+          html_content?: string | null
+          id?: string
+          metadata?: Json | null
+          title?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
