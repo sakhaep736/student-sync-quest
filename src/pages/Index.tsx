@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Users, Briefcase, MapPin, Star } from "lucide-react";
+import { Search, Users, Briefcase, MapPin, Star, UserPlus } from "lucide-react";
+import Navigation from "@/components/Navigation";
 
 interface Student {
   id: string;
@@ -92,19 +93,65 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
       {/* Hero Section */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Hire India's Most Talented
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500"> Students</span>
             <br />for Freelance & Part-Time Work
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
             From design to tutoring to delivery – support student talent while getting work done affordably. 
             Connect with 18+ students across India for your next project.
           </p>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+              <Users className="mr-2 h-5 w-5" />
+              Browse Students
+            </Button>
+            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
+              <Briefcase className="mr-2 h-5 w-5" />
+              Post a Job
+            </Button>
+            <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-gray-300">
+              <UserPlus className="mr-2 h-5 w-5" />
+              Join as a Student
+            </Button>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-16">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600 mb-2">5000+</div>
+              <div className="text-gray-600 text-lg">Active Students</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-600 mb-2">1000+</div>
+              <div className="text-gray-600 text-lg">Jobs Completed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-gray-900 mb-2">50+</div>
+              <div className="text-gray-600 text-lg">Cities Covered</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Explore Job Categories Section */}
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Explore Job Categories</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Find students skilled in various fields, from digital services to offline work
+            </p>
+          </div>
           
           {/* Search and Filter */}
           <div className="max-w-4xl mx-auto mb-12">
@@ -129,22 +176,6 @@ const Index = () => {
                   </option>
                 ))}
               </select>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto mb-16">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">5000+</div>
-              <div className="text-gray-600">Active Students</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">1000+</div>
-              <div className="text-gray-600">Jobs Completed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">50+</div>
-              <div className="text-gray-600">Cities Covered</div>
             </div>
           </div>
         </div>
