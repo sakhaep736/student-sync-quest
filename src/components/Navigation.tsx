@@ -28,14 +28,18 @@ const Navigation = () => {
               View Jobs
             </Button>
           </Link>
-          <Button variant="ghost" className="flex items-center gap-2">
-            <Briefcase className="h-4 w-4" />
-            Post a Job
-          </Button>
-          <Button variant="ghost" className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4" />
-            Join as Student
-          </Button>
+          <Link to="/post-job">
+            <Button variant="ghost" className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              Post a Job
+            </Button>
+          </Link>
+          <Link to="/join-as-student">
+            <Button variant="ghost" className="flex items-center gap-2">
+              <UserPlus className="h-4 w-4" />
+              Join as Student
+            </Button>
+          </Link>
           <Button variant="ghost">About</Button>
           <Button variant="ghost">Contact</Button>
         </div>

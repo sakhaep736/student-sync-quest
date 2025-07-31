@@ -118,14 +118,18 @@ const Index = () => {
                 Browse Students
               </Button>
             </Link>
-            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
-              <Briefcase className="mr-2 h-5 w-5" />
-              Post a Job
-            </Button>
-            <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-gray-300">
-              <UserPlus className="mr-2 h-5 w-5" />
-              Join as a Student
-            </Button>
+            <Link to="/post-job">
+              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
+                <Briefcase className="mr-2 h-5 w-5" />
+                Post a Job
+              </Button>
+            </Link>
+            <Link to="/join-as-student">
+              <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-gray-300">
+                <UserPlus className="mr-2 h-5 w-5" />
+                Join as a Student
+              </Button>
+            </Link>
           </div>
 
           {/* Stats */}
