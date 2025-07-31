@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Users, Briefcase, MapPin, Star, UserPlus } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import { Link } from "react-router-dom";
 
 interface Student {
   id: string;
@@ -111,10 +112,12 @@ const Index = () => {
           
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
-              <Users className="mr-2 h-5 w-5" />
-              Browse Students
-            </Button>
+            <Link to="/browse-students">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
+                <Users className="mr-2 h-5 w-5" />
+                Browse Students
+              </Button>
+            </Link>
             <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
               <Briefcase className="mr-2 h-5 w-5" />
               Post a Job
