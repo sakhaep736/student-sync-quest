@@ -8,6 +8,8 @@ import BrowseStudents from "./pages/BrowseStudents";
 import ViewJobs from "./pages/ViewJobs";
 import PostJob from "./pages/PostJob";
 import JoinAsStudent from "./pages/JoinAsStudent";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/view-jobs" element={<ViewJobs />} />
           <Route path="/post-job" element={<PostJob />} />
           <Route path="/join-as-student" element={<JoinAsStudent />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

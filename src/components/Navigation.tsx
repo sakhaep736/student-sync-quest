@@ -40,8 +40,12 @@ const Navigation = () => {
               Join as Student
             </Button>
           </Link>
-          <Button variant="ghost">About</Button>
-          <Button variant="ghost">Contact</Button>
+          <Link to="/about">
+            <Button variant="ghost">About</Button>
+          </Link>
+          <Link to="/contact">
+            <Button variant="ghost">Contact</Button>
+          </Link>
         </div>
       </div>
     </nav>
