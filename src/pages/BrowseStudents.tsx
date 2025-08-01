@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Users } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import StudentDetailModal from "@/components/StudentDetailModal";
 
 interface Student {
   id: string;
@@ -16,6 +17,10 @@ interface Student {
   hourly_rate: number;
   experience_level: string;
   availability: string;
+  email?: string;
+  contact_info?: any;
+  portfolio_links?: string[];
+  created_at: string;
 }
 
 const BrowseStudents = () => {
@@ -23,6 +28,8 @@ const BrowseStudents = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const categories = [
     { id: "all", name: "All Categories" },
@@ -47,6 +54,11 @@ const BrowseStudents = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleStudentClick = (student: Student) => {
+    setSelectedStudent(student);
+    setIsModalOpen(true);
   };
 
   const filteredStudents = students.filter(student => {
@@ -106,7 +118,11 @@ const BrowseStudents = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredStudents.map((student) => (
-              <Card key={student.id} className="hover:shadow-lg transition-shadow bg-white">
+              <Card 
+                key={student.id} 
+                className="hover:shadow-lg transition-shadow bg-white cursor-pointer"
+                onClick={() => handleStudentClick(student)}
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -120,7 +136,7 @@ const BrowseStudents = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600 mb-3">{student.description}</p>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{student.description}</p>
                   <div className="flex flex-wrap gap-1 mb-3">
                     {student.skills.slice(0, 3).map((skill, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
@@ -143,6 +159,12 @@ const BrowseStudents = () => {
           </div>
         </div>
       </div>
+
+      <StudentDetailModal 
+        student={selectedStudent}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

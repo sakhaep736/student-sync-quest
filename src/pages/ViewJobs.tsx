@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, Briefcase } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import JobDetailModal from "@/components/JobDetailModal";
 
 interface Job {
   id: string;
@@ -19,7 +20,9 @@ interface Job {
   location: string;
   skills_required: string[];
   employer_name: string;
+  employer_contact?: any;
   status: string;
+  created_at: string;
 }
 
 const ViewJobs = () => {
@@ -28,6 +31,8 @@ const ViewJobs = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [jobTypeFilter, setJobTypeFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const categories = [
     { id: "all", name: "All Categories" },
@@ -52,6 +57,11 @@ const ViewJobs = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleJobClick = (job: Job) => {
+    setSelectedJob(job);
+    setIsModalOpen(true);
   };
 
   const filteredJobs = jobs.filter(job => {
@@ -139,7 +149,11 @@ const ViewJobs = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredJobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow bg-white">
+              <Card 
+                key={job.id} 
+                className="hover:shadow-lg transition-shadow bg-white cursor-pointer"
+                onClick={() => handleJobClick(job)}
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -153,19 +167,29 @@ const ViewJobs = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600 mb-3">{job.description}</p>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{job.description}</p>
                   <div className="flex flex-wrap gap-1 mb-3">
-                    {job.skills_required.map((skill, index) => (
+                    {job.skills_required.slice(0, 3).map((skill, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {skill}
                       </Badge>
                     ))}
+                    {job.skills_required.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{job.skills_required.length - 3} more
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="font-semibold text-green-600">
                       ₹{job.budget_min.toLocaleString()} - ₹{job.budget_max.toLocaleString()}
                     </span>
-                    <Button size="sm">Apply Now</Button>
+                    <Button size="sm" onClick={(e) => {
+                      e.stopPropagation();
+                      handleJobClick(job);
+                    }}>
+                      View Details
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -173,6 +197,12 @@ const ViewJobs = () => {
           </div>
         </div>
       </div>
+
+      <JobDetailModal 
+        job={selectedJob}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
