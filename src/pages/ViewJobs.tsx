@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, Briefcase } from "lucide-react";
 import Navigation from "@/components/Navigation";
 
@@ -25,6 +26,7 @@ const ViewJobs = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [jobTypeFilter, setJobTypeFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
   const categories = [
@@ -56,7 +58,22 @@ const ViewJobs = () => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.skills_required.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === "all" || job.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    
+    // Filter by job type (online/offline)
+    let matchesJobType = true;
+    if (jobTypeFilter === "online") {
+      matchesJobType = job.location?.toLowerCase().includes("remote") || 
+                      job.location?.toLowerCase().includes("online") ||
+                      job.location?.toLowerCase().includes("anywhere") ||
+                      job.job_type?.toLowerCase().includes("remote");
+    } else if (jobTypeFilter === "offline") {
+      matchesJobType = !(job.location?.toLowerCase().includes("remote") || 
+                        job.location?.toLowerCase().includes("online") ||
+                        job.location?.toLowerCase().includes("anywhere") ||
+                        job.job_type?.toLowerCase().includes("remote"));
+    }
+    
+    return matchesSearch && matchesCategory && matchesJobType;
   });
 
   if (loading) {
@@ -93,17 +110,30 @@ const ViewJobs = () => {
                   className="pl-10"
                 />
               </div>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white"
-              >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map(category => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={jobTypeFilter} onValueChange={setJobTypeFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Job type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Jobs</SelectItem>
+                  <SelectItem value="online">Online</SelectItem>
+                  <SelectItem value="offline">Offline</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           
