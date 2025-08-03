@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Users, Briefcase, MapPin, Star, UserPlus } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Student {
   id: string;
@@ -35,6 +36,7 @@ interface Job {
 }
 
 const Index = () => {
+  const { t } = useLanguage();
   const [students, setStudents] = useState<Student[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -101,13 +103,12 @@ const Index = () => {
       <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Hire India's Most Talented
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500"> Students</span>
-            <br />for Freelance & Part-Time Work
+            {t('hero.title1')}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500"> {t('hero.title2')}</span>
+            <br />{t('hero.title3')}
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            From design to tutoring to delivery – support student talent while getting work done affordably. 
-            Connect with 18+ students across India for your next project.
+            {t('hero.subtitle')}
           </p>
           
           {/* Action Buttons */}
@@ -115,19 +116,19 @@ const Index = () => {
             <Link to="/browse-students">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
                 <Users className="mr-2 h-5 w-5" />
-                Browse Students
+                {t('hero.browseStudents')}
               </Button>
             </Link>
             <Link to="/post-job">
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
                 <Briefcase className="mr-2 h-5 w-5" />
-                Post a Job
+                {t('hero.postJob')}
               </Button>
             </Link>
             <Link to="/join-as-student">
               <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-gray-300">
                 <UserPlus className="mr-2 h-5 w-5" />
-                Join as a Student
+                {t('hero.joinAsStudent')}
               </Button>
             </Link>
           </div>
@@ -136,15 +137,15 @@ const Index = () => {
           <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-16">
             <div className="text-center">
               <div className="text-4xl font-bold text-blue-600 mb-2">5000+</div>
-              <div className="text-gray-600 text-lg">Active Students</div>
+              <div className="text-gray-600 text-lg">{t('stats.activeStudents')}</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-green-600 mb-2">1000+</div>
-              <div className="text-gray-600 text-lg">Jobs Completed</div>
+              <div className="text-gray-600 text-lg">{t('stats.jobsCompleted')}</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-gray-900 mb-2">50+</div>
-              <div className="text-gray-600 text-lg">Cities Covered</div>
+              <div className="text-gray-600 text-lg">{t('stats.citiesCovered')}</div>
             </div>
           </div>
         </div>
@@ -154,9 +155,9 @@ const Index = () => {
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Explore Job Categories</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">{t('categories.title')}</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Find students skilled in various fields, from digital services to offline work
+              {t('categories.subtitle')}
             </p>
           </div>
           
@@ -166,7 +167,7 @@ const Index = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search students or skills..."
+                  placeholder={t('categories.search')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -193,7 +194,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 mb-8">
             <Users className="h-6 w-6 text-blue-600" />
-            <h2 className="text-3xl font-bold">Available Students ({filteredStudents.length})</h2>
+            <h2 className="text-3xl font-bold">{t('students.title')} ({filteredStudents.length})</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
@@ -226,7 +227,7 @@ const Index = () => {
                     )}
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-green-600">₹{student.hourly_rate}/hr</span>
+                    <span className="font-semibold text-green-600">₹{student.hourly_rate}{t('students.hourly')}</span>
                     <span className="text-sm text-gray-500">{student.availability}</span>
                   </div>
                 </CardContent>
@@ -241,7 +242,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 mb-8">
             <Briefcase className="h-6 w-6 text-green-600" />
-            <h2 className="text-3xl font-bold">Active Job Listings ({filteredJobs.length})</h2>
+            <h2 className="text-3xl font-bold">{t('jobs.title')} ({filteredJobs.length})</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -272,7 +273,7 @@ const Index = () => {
                     <span className="font-semibold text-green-600">
                       ₹{job.budget_min.toLocaleString()} - ₹{job.budget_max.toLocaleString()}
                     </span>
-                    <Button size="sm">Apply Now</Button>
+                    <Button size="sm">{t('jobs.applyNow')}</Button>
                   </div>
                 </CardContent>
               </Card>
