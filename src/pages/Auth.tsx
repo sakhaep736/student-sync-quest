@@ -8,9 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Languages } from 'lucide-react';
 
 const Auth = () => {
-  const { t } = useLanguage();
+  const { t, language, toggleLanguage } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -79,7 +80,20 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 relative">
+      {/* Language Toggle - Top Right */}
+      <Button
+        onClick={toggleLanguage}
+        variant="outline"
+        size="sm"
+        className="absolute top-4 right-4 flex items-center gap-2 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
+      >
+        <Languages size={18} />
+        <span className="text-sm font-medium">
+          {language === 'en' ? 'हिं' : 'EN'}
+        </span>
+      </Button>
+      
       <Card className="w-full max-w-md bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-gray-900">{t('auth.welcome')}</CardTitle>
