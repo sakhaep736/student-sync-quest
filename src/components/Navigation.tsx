@@ -145,7 +145,7 @@ const Navigation = () => {
               {language === 'en' ? 'हिं' : 'EN'}
             </span>
           </Button>
-          <span className="text-xs text-gray-500">
+          <span className="text-sm text-gray-700 font-medium text-center px-2 py-1 bg-gray-50 rounded-md">
             {language === 'en' ? 'If you want to change the language click above' : 'यदि आप भाषा बदलना चाहते हैं तो ऊपर क्लिक करें'}
           </span>
         </div>
