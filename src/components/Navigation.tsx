@@ -48,20 +48,20 @@ const Navigation = () => {
           <Link to="/contact">
             <Button variant="ghost">{t('nav.contact')}</Button>
           </Link>
-          
-          {/* Language Toggle */}
-          <Button
-            onClick={toggleLanguage}
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
-          >
-            <Languages size={20} />
-            <span className="text-sm font-medium">
-              {language === 'en' ? 'हिं' : 'EN'}
-            </span>
-          </Button>
         </div>
+
+        {/* Language Toggle - Always Visible */}
+        <Button
+          onClick={toggleLanguage}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
+        >
+          <Languages size={18} />
+          <span className="text-sm font-medium">
+            {language === 'en' ? 'हिं' : 'EN'}
+          </span>
+        </Button>
       </div>
     </nav>
   );
