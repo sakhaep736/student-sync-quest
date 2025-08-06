@@ -49,31 +49,37 @@ const Navigation = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>View Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Edit Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Clock className="mr-2 h-4 w-4" />
-                  <span>Job History</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Bookmark className="mr-2 h-4 w-4" />
-                  <span>Saved Jobs</span>
-                </DropdownMenuItem>
+                <Link to="/profile">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>View Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link to="/job-history">
+                  <DropdownMenuItem>
+                    <Clock className="mr-2 h-4 w-4" />
+                    <span>Job History</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link to="/saved-jobs">
+                  <DropdownMenuItem>
+                    <Bookmark className="mr-2 h-4 w-4" />
+                    <span>Saved Jobs</span>
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Account Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  <span>Help & Support</span>
-                </DropdownMenuItem>
+                <Link to="/account-settings">
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Account Settings</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link to="/help-support">
+                  <DropdownMenuItem>
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    <span>Help & Support</span>
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />

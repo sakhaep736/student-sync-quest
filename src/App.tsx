@@ -13,6 +13,11 @@ import JoinAsStudent from "./pages/JoinAsStudent";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
+import JobHistory from "./pages/JobHistory";
+import SavedJobs from "./pages/SavedJobs";
+import AccountSettings from "./pages/AccountSettings";
+import HelpSupport from "./pages/HelpSupport";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +37,11 @@ const App = () => (
             <Route path="/join-as-student" element={<JoinAsStudent />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/job-history" element={<JobHistory />} />
+            <Route path="/saved-jobs" element={<SavedJobs />} />
+            <Route path="/account-settings" element={<AccountSettings />} />
+            <Route path="/help-support" element={<HelpSupport />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
