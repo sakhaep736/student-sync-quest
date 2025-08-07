@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import WhatsAppTestPanel from "@/components/WhatsAppTestPanel";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,11 @@ import {
   Save, 
   Trash2,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  MessageCircle,
+  Phone,
+  Link,
+  Unlink
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -45,7 +50,22 @@ const AccountSettings = () => {
     jobAlerts: true,
     messageAlerts: true,
     weeklyDigest: false,
-    marketingEmails: false
+    marketingEmails: false,
+    whatsappEnabled: false,
+    whatsappJobAlerts: false,
+    whatsappNewJobMatches: false,
+    whatsappApplicationUpdates: false,
+    whatsappInterviewReminders: false,
+    whatsappPaymentNotifications: false,
+    whatsappWeeklyDigest: false,
+    whatsappUrgentAlerts: false
+  });
+
+  // WhatsApp settings
+  const [whatsappSettings, setWhatsappSettings] = useState({
+    phoneNumber: "",
+    isConnected: false,
+    lastVerified: null as Date | null
   });
   
   // Privacy settings
@@ -64,6 +84,7 @@ const AccountSettings = () => {
         // Load user preferences from metadata
         setNotifications(user.user_metadata?.notifications || notifications);
         setPrivacy(user.user_metadata?.privacy || privacy);
+        setWhatsappSettings(user.user_metadata?.whatsappSettings || whatsappSettings);
       }
     });
   }, []);
@@ -167,7 +188,8 @@ const AccountSettings = () => {
       const { error } = await supabase.auth.updateUser({
         data: { 
           ...user?.user_metadata,
-          notifications 
+          notifications,
+          whatsappSettings
         }
       });
 
@@ -188,6 +210,77 @@ const AccountSettings = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleWhatsAppConnect = async () => {
+    if (!whatsappSettings.phoneNumber) {
+      toast({
+        title: language === 'en' ? "Error" : "त्रुटि",
+        description: language === 'en' ? "Please enter your WhatsApp number" : "कृपया अपना WhatsApp नंबर दर्ज करें",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Call edge function to verify WhatsApp number
+      const { data, error } = await supabase.functions.invoke('verify-whatsapp', {
+        body: { phoneNumber: whatsappSettings.phoneNumber }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        setWhatsappSettings(prev => ({
+          ...prev,
+          isConnected: true,
+          lastVerified: new Date()
+        }));
+        
+        toast({
+          title: language === 'en' ? "WhatsApp Connected" : "WhatsApp कनेक्ट हो गया",
+          description: language === 'en' 
+            ? "Your WhatsApp account has been successfully connected" 
+            : "आपका WhatsApp खाता सफलतापूर्वक कनेक्ट हो गया है"
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: language === 'en' ? "Connection Failed" : "कनेक्शन विफल",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleWhatsAppDisconnect = () => {
+    setWhatsappSettings(prev => ({
+      ...prev,
+      isConnected: false,
+      lastVerified: null
+    }));
+    
+    setNotifications(prev => ({
+      ...prev,
+      whatsappEnabled: false,
+      whatsappJobAlerts: false,
+      whatsappNewJobMatches: false,
+      whatsappApplicationUpdates: false,
+      whatsappInterviewReminders: false,
+      whatsappPaymentNotifications: false,
+      whatsappWeeklyDigest: false,
+      whatsappUrgentAlerts: false
+    }));
+
+    toast({
+      title: language === 'en' ? "WhatsApp Disconnected" : "WhatsApp डिस्कनेक्ट हो गया",
+      description: language === 'en' 
+        ? "WhatsApp notifications have been disabled" 
+        : "WhatsApp सूचनाएं अक्षम कर दी गई हैं"
+    });
   };
 
   const handlePrivacyUpdate = async () => {
@@ -406,33 +499,166 @@ const AccountSettings = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {Object.entries(notifications).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor={key} className="text-base">
-                      {key === 'emailNotifications' && (language === 'en' ? 'Email Notifications' : 'ईमेल सूचनाएं')}
-                      {key === 'jobAlerts' && (language === 'en' ? 'Job Alerts' : 'नौकरी अलर्ट')}
-                      {key === 'messageAlerts' && (language === 'en' ? 'Message Alerts' : 'संदेश अलर्ट')}
-                      {key === 'weeklyDigest' && (language === 'en' ? 'Weekly Digest' : 'साप्ताहिक सारांश')}
-                      {key === 'marketingEmails' && (language === 'en' ? 'Marketing Emails' : 'मार्केटिंग ईमेल')}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {key === 'emailNotifications' && (language === 'en' ? 'Receive email notifications' : 'ईमेल सूचनाएं प्राप्त करें')}
-                      {key === 'jobAlerts' && (language === 'en' ? 'Get notified about new job opportunities' : 'नए नौकरी के अवसरों के बारे में सूचित हों')}
-                      {key === 'messageAlerts' && (language === 'en' ? 'Notifications for new messages' : 'नए संदेशों के लिए सूचनाएं')}
-                      {key === 'weeklyDigest' && (language === 'en' ? 'Weekly summary of activity' : 'गतिविधि का साप्ताहिक सारांश')}
-                      {key === 'marketingEmails' && (language === 'en' ? 'Promotional and marketing content' : 'प्रचारात्मक और मार्केटिंग सामग्री')}
-                    </p>
+              {/* Email Notifications */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-foreground">
+                  {language === 'en' ? 'Email Notifications' : 'ईमेल सूचनाएं'}
+                </h4>
+                {Object.entries(notifications)
+                  .filter(([key]) => !key.startsWith('whatsapp'))
+                  .map(([key, value]) => (
+                  <div key={key} className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor={key} className="text-base">
+                        {key === 'emailNotifications' && (language === 'en' ? 'Email Notifications' : 'ईमेल सूचनाएं')}
+                        {key === 'jobAlerts' && (language === 'en' ? 'Job Alerts' : 'नौकरी अलर्ट')}
+                        {key === 'messageAlerts' && (language === 'en' ? 'Message Alerts' : 'संदेश अलर्ट')}
+                        {key === 'weeklyDigest' && (language === 'en' ? 'Weekly Digest' : 'साप्ताहिक सारांश')}
+                        {key === 'marketingEmails' && (language === 'en' ? 'Marketing Emails' : 'मार्केटिंग ईमेल')}
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        {key === 'emailNotifications' && (language === 'en' ? 'Receive email notifications' : 'ईमेल सूचनाएं प्राप्त करें')}
+                        {key === 'jobAlerts' && (language === 'en' ? 'Get notified about new job opportunities' : 'नए नौकरी के अवसरों के बारे में सूचित हों')}
+                        {key === 'messageAlerts' && (language === 'en' ? 'Notifications for new messages' : 'नए संदेशों के लिए सूचनाएं')}
+                        {key === 'weeklyDigest' && (language === 'en' ? 'Weekly summary of activity' : 'गतिविधि का साप्ताहिक सारांश')}
+                        {key === 'marketingEmails' && (language === 'en' ? 'Promotional and marketing content' : 'प्रचारात्मक और मार्केटिंग सामग्री')}
+                      </p>
+                    </div>
+                    <Switch
+                      id={key}
+                      checked={value}
+                      onCheckedChange={(checked) => 
+                        setNotifications(prev => ({ ...prev, [key]: checked }))
+                      }
+                    />
                   </div>
-                  <Switch
-                    id={key}
-                    checked={value}
-                    onCheckedChange={(checked) => 
-                      setNotifications(prev => ({ ...prev, [key]: checked }))
-                    }
-                  />
+                ))}
+              </div>
+
+              <Separator />
+
+              {/* WhatsApp Integration */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <MessageCircle className="h-6 w-6 text-green-600" />
+                  <h4 className="text-lg font-semibold text-foreground">
+                    {language === 'en' ? 'WhatsApp Integration' : 'WhatsApp एकीकरण'}
+                  </h4>
+                  {whatsappSettings.isConnected && (
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      {language === 'en' ? 'Connected' : 'कनेक्टेड'}
+                    </Badge>
+                  )}
                 </div>
-              ))}
+                
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <Label htmlFor="whatsappNumber">
+                          {language === 'en' ? 'WhatsApp Phone Number' : 'WhatsApp फ़ोन नंबर'}
+                        </Label>
+                        <Input
+                          id="whatsappNumber"
+                          type="tel"
+                          value={whatsappSettings.phoneNumber}
+                          onChange={(e) => setWhatsappSettings(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                          placeholder={language === 'en' ? '+1234567890' : '+1234567890'}
+                          disabled={whatsappSettings.isConnected}
+                          className="mt-1"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {language === 'en' 
+                            ? 'Include country code (e.g., +91 for India)' 
+                            : 'देश कोड शामिल करें (जैसे, भारत के लिए +91)'
+                          }
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {!whatsappSettings.isConnected ? (
+                          <Button onClick={handleWhatsAppConnect} disabled={loading} size="sm">
+                            <Link className="h-4 w-4 mr-2" />
+                            {language === 'en' ? 'Connect' : 'कनेक्ट करें'}
+                          </Button>
+                        ) : (
+                          <Button 
+                            onClick={handleWhatsAppDisconnect} 
+                            variant="outline" 
+                            size="sm"
+                          >
+                            <Unlink className="h-4 w-4 mr-2" />
+                            {language === 'en' ? 'Disconnect' : 'डिस्कनेक्ट करें'}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {whatsappSettings.lastVerified && (
+                      <p className="text-xs text-green-600">
+                        {language === 'en' 
+                          ? `Last verified: ${whatsappSettings.lastVerified.toLocaleDateString()}` 
+                          : `अंतिम सत्यापन: ${whatsappSettings.lastVerified.toLocaleDateString()}`
+                        }
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* WhatsApp Notification Options */}
+                {whatsappSettings.isConnected && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="whatsappEnabled" className="text-base">
+                          {language === 'en' ? 'Enable WhatsApp Notifications' : 'WhatsApp सूचनाएं सक्षम करें'}
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          {language === 'en' ? 'Master toggle for all WhatsApp notifications' : 'सभी WhatsApp सूचनाओं के लिए मुख्य टॉगल'}
+                        </p>
+                      </div>
+                      <Switch
+                        id="whatsappEnabled"
+                        checked={notifications.whatsappEnabled}
+                        onCheckedChange={(checked) => 
+                          setNotifications(prev => ({ ...prev, whatsappEnabled: checked }))
+                        }
+                      />
+                    </div>
+
+                    {notifications.whatsappEnabled && (
+                      <div className="ml-4 space-y-4 border-l-2 border-green-200 pl-4">
+                        {[
+                          { key: 'whatsappJobAlerts', label: language === 'en' ? 'New Job Postings' : 'नई नौकरी पोस्टिंग', desc: language === 'en' ? 'Get notified when new jobs matching your profile are posted' : 'जब आपकी प्रोफ़ाइल से मेल खाती नई नौकरियां पोस्ट हों तो सूचित हों' },
+                          { key: 'whatsappNewJobMatches', label: language === 'en' ? 'Job Matches' : 'नौकरी मैच', desc: language === 'en' ? 'Personalized job recommendations based on your skills' : 'आपके कौशल के आधार पर व्यक्तिगत नौकरी सिफारिशें' },
+                          { key: 'whatsappApplicationUpdates', label: language === 'en' ? 'Application Updates' : 'आवेदन अपडेट', desc: language === 'en' ? 'Status updates for your job applications' : 'आपके नौकरी आवेदनों के लिए स्थिति अपडेट' },
+                          { key: 'whatsappInterviewReminders', label: language === 'en' ? 'Interview Reminders' : 'साक्षात्कार रिमाइंडर', desc: language === 'en' ? 'Reminders for upcoming interviews and important dates' : 'आगामी साक्षात्कार और महत्वपूर्ण तिथियों के लिए रिमाइंडर' },
+                          { key: 'whatsappPaymentNotifications', label: language === 'en' ? 'Payment Notifications' : 'भुगतान सूचनाएं', desc: language === 'en' ? 'Payment confirmations and earning updates' : 'भुगतान पुष्टिकरण और आय अपडेट' },
+                          { key: 'whatsappWeeklyDigest', label: language === 'en' ? 'Weekly Digest' : 'साप्ताहिक सारांश', desc: language === 'en' ? 'Weekly summary of job opportunities and activities' : 'नौकरी के अवसरों और गतिविधियों का साप्ताहिक सारांश' },
+                          { key: 'whatsappUrgentAlerts', label: language === 'en' ? 'Urgent Alerts' : 'तत्काल अलर्ट', desc: language === 'en' ? 'Important time-sensitive notifications' : 'महत्वपूर्ण समय-संवेदनशील सूचनाएं' }
+                        ].map(({ key, label, desc }) => (
+                          <div key={key} className="flex items-center justify-between">
+                            <div>
+                              <Label htmlFor={key} className="text-sm font-medium">
+                                {label}
+                              </Label>
+                              <p className="text-xs text-muted-foreground">{desc}</p>
+                            </div>
+                            <Switch
+                              id={key}
+                              checked={notifications[key as keyof typeof notifications]}
+                              onCheckedChange={(checked) => 
+                                setNotifications(prev => ({ ...prev, [key]: checked }))
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <Button onClick={handleNotificationUpdate} disabled={loading}>
                 <Save className="h-4 w-4 mr-2" />
                 {language === 'en' ? 'Save Preferences' : 'प्राथमिकताएं सहेजें'}
@@ -480,6 +706,16 @@ const AccountSettings = () => {
               </Button>
             </CardContent>
           </Card>
+
+          {/* WhatsApp Test Panel (Development Mode) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">
+                {language === 'en' ? 'WhatsApp Integration Testing' : 'WhatsApp एकीकरण परीक्षण'}
+              </h3>
+              <WhatsAppTestPanel />
+            </div>
+          )}
 
           {/* Danger Zone */}
           <Card className="border-red-200 bg-red-50/50">

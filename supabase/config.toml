@@ -1,1 +1,10 @@
 project_id = "actyrrefryycuvptecew"
+
+[functions.verify-whatsapp]
+verify_jwt = true
+
+[functions.send-whatsapp-notification]  
+verify_jwt = true
+
+[functions.whatsapp-job-alerts]
+verify_jwt = false
