@@ -139,21 +139,21 @@ const Navigation = () => {
         </div>
 
         {/* Language Toggle - Always Visible */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-2">
           <Button
             onClick={toggleLanguage}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
+            className="flex items-center gap-2 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700 shadow-md"
           >
             <Languages size={18} />
             <span className="text-sm font-medium">
               {language === 'en' ? 'हिं' : 'EN'}
             </span>
           </Button>
-          <span className="text-sm text-gray-700 font-medium text-center px-2 py-1 bg-gray-50 rounded-md">
-            {language === 'en' ? 'If you want to change the language click above' : 'यदि आप भाषा बदलना चाहते हैं तो ऊपर क्लिक करें'}
-          </span>
+          <div className="text-xs text-gray-600 font-medium text-center px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg shadow-sm max-w-[140px]">
+            {language === 'en' ? 'Click above to switch language' : 'भाषा बदलने के लिए ऊपर क्लिक करें'}
+          </div>
         </div>
       </div>
     </nav>
