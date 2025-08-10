@@ -18,6 +18,7 @@ import JobHistory from "./pages/JobHistory";
 import SavedJobs from "./pages/SavedJobs";
 import AccountSettings from "./pages/AccountSettings";
 import HelpSupport from "./pages/HelpSupport";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/saved-jobs" element={<SavedJobs />} />
             <Route path="/account-settings" element={<AccountSettings />} />
             <Route path="/help-support" element={<HelpSupport />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
