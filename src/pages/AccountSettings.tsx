@@ -537,6 +537,48 @@ const AccountSettings = () => {
 
               <Separator />
 
+              {/* WhatsApp Job Alerts Toggle */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <MessageCircle className="h-6 w-6 text-green-600" />
+                  <h4 className="text-lg font-semibold text-foreground">
+                    {language === 'en' ? 'WhatsApp Job Alerts' : 'WhatsApp नौकरी अलर्ट'}
+                  </h4>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div>
+                    <Label htmlFor="whatsappJobAlertsToggle" className="text-base">
+                      {language === 'en' ? 'Enable WhatsApp Job Alerts' : 'WhatsApp नौकरी अलर्ट सक्षम करें'}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {language === 'en' 
+                        ? 'Receive job notifications directly on WhatsApp' 
+                        : 'WhatsApp पर सीधे नौकरी की सूचनाएं प्राप्त करें'
+                      }
+                    </p>
+                    {!whatsappSettings.isConnected && (
+                      <p className="text-xs text-amber-600 mt-1">
+                        {language === 'en' 
+                          ? 'Connect your WhatsApp number below to enable alerts' 
+                          : 'अलर्ट सक्षम करने के लिए नीचे अपना WhatsApp नंबर कनेक्ट करें'
+                        }
+                      </p>
+                    )}
+                  </div>
+                  <Switch
+                    id="whatsappJobAlertsToggle"
+                    checked={notifications.whatsappJobAlerts && whatsappSettings.isConnected}
+                    disabled={!whatsappSettings.isConnected}
+                    onCheckedChange={(checked) => 
+                      setNotifications(prev => ({ ...prev, whatsappJobAlerts: checked }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
               {/* WhatsApp Integration */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
