@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Users, Briefcase, MapPin, Star, UserPlus } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Users, Briefcase, MapPin, Star, UserPlus, User } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,6 +20,7 @@ interface Student {
   hourly_rate: number;
   experience_level: string;
   availability: string;
+  profile_photo_url?: string;
 }
 
 interface Job {
@@ -70,7 +72,8 @@ const Index = () => {
           description,
           hourly_rate,
           experience_level,
-          availability
+          availability,
+          profile_photo_url
         `),
         supabase.from('jobs').select('*').eq('status', 'active')
       ]);
@@ -212,15 +215,25 @@ const Index = () => {
             {filteredStudents.map((student) => (
               <Card key={student.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{student.name}</CardTitle>
-                      <CardDescription className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {student.location}
-                      </CardDescription>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={student.profile_photo_url} alt={`${student.name}'s profile`} />
+                      <AvatarFallback className="bg-gray-200">
+                        <User className="h-5 w-5 text-gray-400" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-lg">{student.name}</CardTitle>
+                          <CardDescription className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {student.location}
+                          </CardDescription>
+                        </div>
+                        <Badge variant="secondary">{student.experience_level}</Badge>
+                      </div>
                     </div>
-                    <Badge variant="secondary">{student.experience_level}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>

@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Calendar, DollarSign, User, Clock, Star, ExternalLink } from "lucide-react";
 
 interface Student {
@@ -13,6 +14,7 @@ interface Student {
   hourly_rate: number;
   experience_level: string;
   availability: string;
+  profile_photo_url?: string;
   email?: string;
   contact_info?: any;
   portfolio_links?: string[];
@@ -34,7 +36,15 @@ const StudentDetailModal = ({ student, isOpen, onClose }: StudentDetailModalProp
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">{student.name}</DialogTitle>
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={student.profile_photo_url} alt={`${student.name}'s profile`} />
+              <AvatarFallback className="bg-gray-200">
+                <User className="h-8 w-8 text-gray-400" />
+              </AvatarFallback>
+            </Avatar>
+            <DialogTitle className="text-2xl font-bold">{student.name}</DialogTitle>
+          </div>
         </DialogHeader>
         
         <div className="space-y-6">

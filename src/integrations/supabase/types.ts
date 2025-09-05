@@ -79,6 +79,7 @@ export type Database = {
           location: string | null
           name: string
           portfolio_links: string[] | null
+          profile_photo_url: string | null
           skills: string[] | null
           updated_at: string
           user_id: string
@@ -96,6 +97,7 @@ export type Database = {
           location?: string | null
           name: string
           portfolio_links?: string[] | null
+          profile_photo_url?: string | null
           skills?: string[] | null
           updated_at?: string
           user_id: string
@@ -113,6 +115,7 @@ export type Database = {
           location?: string | null
           name?: string
           portfolio_links?: string[] | null
+          profile_photo_url?: string | null
           skills?: string[] | null
           updated_at?: string
           user_id?: string

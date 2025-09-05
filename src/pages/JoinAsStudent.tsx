@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { GraduationCap, Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
+import ProfilePhotoUpload from "@/components/ProfilePhotoUpload";
 
 const JoinAsStudent = () => {
   const [formData, setFormData] = useState({
@@ -29,6 +30,7 @@ const JoinAsStudent = () => {
   const [portfolioLinks, setPortfolioLinks] = useState<string[]>([]);
   const [currentSkill, setCurrentSkill] = useState("");
   const [currentLink, setCurrentLink] = useState("");
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -100,6 +102,7 @@ const JoinAsStudent = () => {
         experience_level: formData.experience_level,
         availability: formData.availability,
         portfolio_links: portfolioLinks,
+        profile_photo_url: profilePhotoUrl,
         user_id: user.id, // Link to authenticated user
         contact_info: {
           email: formData.email,
@@ -132,6 +135,7 @@ const JoinAsStudent = () => {
       });
       setSkills([]);
       setPortfolioLinks([]);
+      setProfilePhotoUrl("");
     } catch (error) {
       console.error('Error creating profile:', error);
       toast({
@@ -161,6 +165,16 @@ const JoinAsStudent = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Profile Photo Upload */}
+                <div className="flex justify-center mb-6">
+                  <ProfilePhotoUpload
+                    currentPhotoUrl={profilePhotoUrl}
+                    onPhotoUploaded={setProfilePhotoUrl}
+                    onPhotoRemoved={() => setProfilePhotoUrl("")}
+                    size="lg"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name *</Label>

@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Users } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, MapPin, Users, User } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import StudentDetailModal from "@/components/StudentDetailModal";
 
@@ -17,6 +18,7 @@ interface Student {
   hourly_rate: number;
   experience_level: string;
   availability: string;
+  profile_photo_url?: string;
   email?: string;
   contact_info?: any;
   portfolio_links?: string[];
@@ -62,6 +64,7 @@ const BrowseStudents = () => {
           experience_level,
           availability,
           portfolio_links,
+          profile_photo_url,
           created_at
         `);
       if (data) setStudents(data);
@@ -140,15 +143,25 @@ const BrowseStudents = () => {
                 onClick={() => handleStudentClick(student)}
               >
                 <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{student.name}</CardTitle>
-                      <CardDescription className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {student.location}
-                      </CardDescription>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={student.profile_photo_url} alt={`${student.name}'s profile`} />
+                      <AvatarFallback className="bg-gray-200">
+                        <User className="h-6 w-6 text-gray-400" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="text-lg">{student.name}</CardTitle>
+                          <CardDescription className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {student.location}
+                          </CardDescription>
+                        </div>
+                        <Badge variant="secondary">{student.experience_level}</Badge>
+                      </div>
                     </div>
-                    <Badge variant="secondary">{student.experience_level}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
