@@ -47,7 +47,23 @@ const BrowseStudents = () => {
 
   const fetchStudents = async () => {
     try {
-      const { data } = await supabase.from('students').select('*');
+      // Select only public information for browsing
+      // Contact info and email are excluded from public browsing
+      const { data } = await supabase
+        .from('students')
+        .select(`
+          id,
+          name,
+          category,
+          skills,
+          location,
+          description,
+          hourly_rate,
+          experience_level,
+          availability,
+          portfolio_links,
+          created_at
+        `);
       if (data) setStudents(data);
     } catch (error) {
       console.error('Error fetching students:', error);

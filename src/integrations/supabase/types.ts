@@ -81,6 +81,7 @@ export type Database = {
           portfolio_links: string[] | null
           skills: string[] | null
           updated_at: string
+          user_id: string
         }
         Insert: {
           availability?: string | null
@@ -97,6 +98,7 @@ export type Database = {
           portfolio_links?: string[] | null
           skills?: string[] | null
           updated_at?: string
+          user_id: string
         }
         Update: {
           availability?: string | null
@@ -113,6 +115,7 @@ export type Database = {
           portfolio_links?: string[] | null
           skills?: string[] | null
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -83,6 +83,12 @@ const JoinAsStudent = () => {
     setLoading(true);
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('You must be logged in to create a student profile');
+      }
+
       const { error } = await supabase.from('students').insert({
         name: formData.name,
         email: formData.email,
@@ -94,6 +100,7 @@ const JoinAsStudent = () => {
         experience_level: formData.experience_level,
         availability: formData.availability,
         portfolio_links: portfolioLinks,
+        user_id: user.id, // Link to authenticated user
         contact_info: {
           email: formData.email,
           phone: formData.phone,
