@@ -128,42 +128,14 @@ const StudentDetailModal = ({ student, isOpen, onClose }: StudentDetailModalProp
           <div>
             <h3 className="font-semibold mb-2 text-lg">Contact Information</h3>
             <div className="bg-gray-50 p-4 rounded-lg space-y-1">
-              {student.email || student.contact_info ? (
-                <>
-                  {student.email && (
-                    <p className="text-sm">
-                      <span className="font-medium">Email:</span> {student.email}
-                    </p>
-                  )}
-                  {student.contact_info?.phone && (
-                    <p className="text-sm">
-                      <span className="font-medium">Phone:</span> {student.contact_info.phone}
-                    </p>
-                  )}
-                  {student.contact_info?.linkedin && (
-                    <p className="text-sm">
-                      <span className="font-medium">LinkedIn:</span> 
-                      <a 
-                        href={student.contact_info.linkedin} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 ml-1"
-                      >
-                        {student.contact_info.linkedin}
-                      </a>
-                    </p>
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Contact information is protected for student privacy.
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Use the "Send Message" button to connect with this student.
-                  </p>
-                </div>
-              )}
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground mb-2">
+                  Contact information is protected for student privacy.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Use the "Send Message" button to connect with this student.
+                </p>
+              </div>
             </div>
           </div>
 

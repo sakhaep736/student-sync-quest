@@ -62,19 +62,8 @@ const Index = () => {
   const fetchData = async () => {
     try {
       const [studentsResponse, jobsResponse] = await Promise.all([
-        // Select only public information for homepage display
-        supabase.from('students').select(`
-          id,
-          name,
-          category,
-          skills,
-          location,
-          description,
-          hourly_rate,
-          experience_level,
-          availability,
-          profile_photo_url
-        `),
+        // Use secure function to get only public student data
+        supabase.rpc('get_public_students'),
         supabase.from('jobs').select('*').eq('status', 'active')
       ]);
 

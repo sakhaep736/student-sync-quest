@@ -49,24 +49,14 @@ const BrowseStudents = () => {
 
   const fetchStudents = async () => {
     try {
-      // Select only public information for browsing
-      // Contact info and email are excluded from public browsing
-      const { data } = await supabase
-        .from('students')
-        .select(`
-          id,
-          name,
-          category,
-          skills,
-          location,
-          description,
-          hourly_rate,
-          experience_level,
-          availability,
-          portfolio_links,
-          profile_photo_url,
-          created_at
-        `);
+      // Use secure function to get only public student data
+      const { data, error } = await supabase.rpc('get_public_students');
+      
+      if (error) {
+        console.error('Error fetching students:', error);
+        return;
+      }
+      
       if (data) setStudents(data);
     } catch (error) {
       console.error('Error fetching students:', error);
