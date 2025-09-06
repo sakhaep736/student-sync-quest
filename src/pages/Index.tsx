@@ -64,7 +64,8 @@ const Index = () => {
       const [studentsResponse, jobsResponse] = await Promise.all([
         // Use secure function to get only public student data
         supabase.rpc('get_public_students'),
-        supabase.from('jobs').select('*').eq('status', 'active')
+        // Use secure function to get jobs without sensitive data
+        supabase.rpc('get_public_jobs')
       ]);
 
       if (studentsResponse.data) setStudents(studentsResponse.data);

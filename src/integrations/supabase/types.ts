@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_requests: {
+        Row: {
+          approved_at: string | null
+          created_at: string
+          employer_contact: Json
+          id: string
+          job_id: string
+          message: string | null
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string
+          employer_contact: Json
+          id?: string
+          job_id: string
+          message?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string
+          employer_contact?: Json
+          id?: string
+          job_id?: string
+          message?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           budget_max: number | null
@@ -21,11 +57,11 @@ export type Database = {
           category: string
           created_at: string
           description: string
-          employer_contact: Json | null
           employer_name: string | null
           id: string
           job_type: string
           location: string | null
+          posted_by: string | null
           skills_required: string[] | null
           status: string | null
           title: string
@@ -37,11 +73,11 @@ export type Database = {
           category: string
           created_at?: string
           description: string
-          employer_contact?: Json | null
           employer_name?: string | null
           id?: string
           job_type: string
           location?: string | null
+          posted_by?: string | null
           skills_required?: string[] | null
           status?: string | null
           title: string
@@ -53,11 +89,11 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string
-          employer_contact?: Json | null
           employer_name?: string | null
           id?: string
           job_type?: string
           location?: string | null
+          posted_by?: string | null
           skills_required?: string[] | null
           status?: string | null
           title?: string
@@ -157,6 +193,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_jobs: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          budget_max: number
+          budget_min: number
+          category: string
+          created_at: string
+          description: string
+          employer_name: string
+          id: string
+          job_type: string
+          location: string
+          skills_required: string[]
+          status: string
+          title: string
+          updated_at: string
+        }[]
+      }
       get_public_students: {
         Args: Record<PropertyKey, never>
         Returns: {

@@ -1,7 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, DollarSign, User, Clock, Briefcase } from "lucide-react";
+import { MapPin, Calendar, DollarSign, User, Clock, Briefcase, Mail } from "lucide-react";
+import { useState } from "react";
+import ContactRequestModal from "@/components/ContactRequestModal";
+import { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface Job {
   id: string;
@@ -23,9 +26,12 @@ interface JobDetailModalProps {
   job: Job | null;
   isOpen: boolean;
   onClose: () => void;
+  user?: SupabaseUser | null;
 }
 
-const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
+const JobDetailModal = ({ job, isOpen, onClose, user }: JobDetailModalProps) => {
+  const [showContactModal, setShowContactModal] = useState(false);
+  
   if (!job) return null;
 
   const createdDate = new Date(job.created_at).toLocaleDateString();
@@ -93,24 +99,28 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
             <Badge>{job.category}</Badge>
           </div>
 
-          {/* Contact Information */}
-          {job.employer_contact && (
-            <div>
-              <h3 className="font-semibold mb-2 text-lg">Contact Information</h3>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                {job.employer_contact.email && (
-                  <p className="text-sm">
-                    <span className="font-medium">Email:</span> {job.employer_contact.email}
+          {/* Secure Contact Section */}
+          <div>
+            <h3 className="font-semibold mb-2 text-lg">Contact Employer</h3>
+            <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+              <div className="flex items-start gap-3">
+                <Mail className="h-5 w-5 text-orange-600 mt-1" />
+                <div>
+                  <p className="text-sm text-orange-800 mb-3">
+                    To protect privacy, contact information is shared only after employer approval.
                   </p>
-                )}
-                {job.employer_contact.phone && (
-                  <p className="text-sm">
-                    <span className="font-medium">Phone:</span> {job.employer_contact.phone}
-                  </p>
-                )}
+                  <Button 
+                    onClick={() => setShowContactModal(true)}
+                    disabled={!user}
+                    size="sm"
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    {!user ? "Login to Contact" : "Request Contact Info"}
+                  </Button>
+                </div>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
@@ -123,6 +133,13 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
           </div>
         </div>
       </DialogContent>
+      
+      <ContactRequestModal
+        job={job ? { id: job.id, title: job.title, employer_name: job.employer_name } : null}
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        user={user}
+      />
     </Dialog>
   );
 };

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, MapPin, Briefcase } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import JobDetailModal from "@/components/JobDetailModal";
+import { User } from "@supabase/supabase-js";
 
 interface Job {
   id: string;
@@ -33,6 +34,7 @@ const ViewJobs = () => {
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const categories = [
     { id: "all", name: "All Categories" },
@@ -46,11 +48,18 @@ const ViewJobs = () => {
 
   useEffect(() => {
     fetchJobs();
+    getCurrentUser();
   }, []);
+
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+  };
 
   const fetchJobs = async () => {
     try {
-      const { data } = await supabase.from('jobs').select('*').eq('status', 'active');
+      // Use secure function to get jobs without sensitive data
+      const { data } = await supabase.rpc('get_public_jobs');
       if (data) setJobs(data);
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -202,6 +211,7 @@ const ViewJobs = () => {
         job={selectedJob}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        user={user}
       />
     </div>
   );
