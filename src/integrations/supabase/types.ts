@@ -211,6 +211,24 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_public_student_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          availability: string
+          category: string
+          created_at: string
+          description: string
+          experience_level: string
+          hourly_rate: number
+          id: string
+          location: string
+          name: string
+          portfolio_links: string[]
+          profile_photo_url: string
+          skills: string[]
+          updated_at: string
+        }[]
+      }
       get_public_students: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -228,6 +246,10 @@ export type Database = {
           skills: string[]
           updated_at: string
         }[]
+      }
+      sanitize_html_input: {
+        Args: { input_text: string }
+        Returns: string
       }
     }
     Enums: {
