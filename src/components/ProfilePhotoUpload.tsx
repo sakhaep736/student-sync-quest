@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { validateFileType, validateFileSize } from "@/utils/security";
 
 interface ProfilePhotoUploadProps {
   currentPhotoUrl?: string;
@@ -36,21 +37,23 @@ const ProfilePhotoUpload = ({
       const file = event.target.files?.[0];
       if (!file) return;
 
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
+      // Validate file type using security utility
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validateFileType(file, allowedTypes)) {
         toast({
           title: "Invalid file type",
-          description: "Please upload an image file (PNG, JPG, etc.)",
+          description: "Please upload a JPEG, PNG, GIF, or WebP image file.",
           variant: "destructive",
         });
         return;
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (5MB limit) using security utility
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (!validateFileSize(file, maxSize)) {
         toast({
           title: "File too large",
-          description: "Please upload an image smaller than 5MB",
+          description: "Please upload an image smaller than 5MB.",
           variant: "destructive",
         });
         return;

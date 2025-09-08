@@ -50,7 +50,7 @@ const BrowseStudents = () => {
   const fetchStudents = async () => {
     try {
       // Use secure function to get only public student data
-      const { data, error } = await supabase.rpc('get_public_students');
+      const { data, error } = await supabase.rpc('get_public_student_profiles');
       
       if (error) {
         console.error('Error fetching students:', error);

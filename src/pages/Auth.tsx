@@ -10,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Languages } from 'lucide-react';
+import { validatePassword } from '@/utils/security';
+import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
 
 const Auth = () => {
   const { t, language, toggleLanguage } = useLanguage();
@@ -19,6 +21,7 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,7 +38,21 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setPasswordErrors(passwordValidation.errors);
+      toast({
+        title: "Password requirements not met",
+        description: "Please fix the password requirements listed below.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
+    setPasswordErrors([]);
 
     const redirectUrl = `${window.location.origin}/`;
     
@@ -236,9 +253,22 @@ const Auth = () => {
                     type="password"
                     placeholder={t('auth.createPasswordPlaceholder')}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setPasswordErrors([]);
+                    }}
                     required
                   />
+                  <PasswordStrengthMeter password={password} />
+                  {passwordErrors.length > 0 && (
+                    <div className="space-y-1">
+                      {passwordErrors.map((error, index) => (
+                        <p key={index} className="text-sm text-destructive">
+                          • {error}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <Button 
                   type="submit" 
