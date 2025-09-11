@@ -101,6 +101,36 @@ export type Database = {
         }
         Relationships: []
       }
+      otps: {
+        Row: {
+          attempts: number
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          otp_code: string
+          otp_type: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          otp_code: string
+          otp_type: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          otp_code?: string
+          otp_type?: string
+        }
+        Relationships: []
+      }
       students: {
         Row: {
           availability: string | null
@@ -193,6 +223,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_otps: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      generate_otp: {
+        Args: { email_param: string; otp_type_param: string }
+        Returns: string
+      }
       get_public_jobs: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -250,6 +288,14 @@ export type Database = {
       sanitize_html_input: {
         Args: { input_text: string }
         Returns: string
+      }
+      verify_otp: {
+        Args: {
+          email_param: string
+          otp_code_param: string
+          otp_type_param: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
