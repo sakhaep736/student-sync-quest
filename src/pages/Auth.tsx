@@ -12,6 +12,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Languages } from 'lucide-react';
 import { validatePassword } from '@/utils/security';
 import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
+import OTPInput from '@/components/OTPInput';
+import PasswordResetForm from '@/components/PasswordResetForm';
 
 const Auth = () => {
   const { t, language, toggleLanguage } = useLanguage();
@@ -22,6 +24,11 @@ const Auth = () => {
   const [resetLoading, setResetLoading] = useState(false);
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  
+  // OTP flow states
+  const [currentFlow, setCurrentFlow] = useState<'auth' | 'signup-otp' | 'reset-email' | 'reset-otp' | 'reset-password'>('auth');
+  const [otpEmail, setOtpEmail] = useState('');
+  
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -54,29 +61,30 @@ const Auth = () => {
     setLoading(true);
     setPasswordErrors([]);
 
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl
-      }
-    });
+    try {
+      // Send OTP for signup verification
+      const { data, error } = await supabase.functions.invoke('send-otp', {
+        body: { email, type: 'signup' }
+      });
 
-    if (error) {
+      if (error) throw error;
+
+      setOtpEmail(email);
+      setCurrentFlow('signup-otp');
+      toast({
+        title: "OTP Sent",
+        description: "Please check your email for the verification code.",
+      });
+    } catch (error: any) {
+      console.error('Error sending OTP:', error);
       toast({
         title: "Sign Up Error",
-        description: error.message,
+        description: error.message || "Failed to send verification code",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Check your email",
-        description: "We've sent you a confirmation link.",
-      });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -104,55 +112,124 @@ const Auth = () => {
     e.preventDefault();
     setResetLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    try {
+      // Send OTP for password reset
+      const { data, error } = await supabase.functions.invoke('send-otp', {
+        body: { email: resetEmail, type: 'password_reset' }
+      });
 
-    if (error) {
-      toast({
-        title: "Reset Password Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Password Reset Email Sent",
-        description: "Check your email for a password reset link.",
-      });
+      if (error) throw error;
+
+      setOtpEmail(resetEmail);
+      setCurrentFlow('reset-otp');
       setIsResetDialogOpen(false);
       setResetEmail('');
+      toast({
+        title: "OTP Sent",
+        description: "Please check your email for the verification code.",
+      });
+    } catch (error: any) {
+      console.error('Error sending reset OTP:', error);
+      toast({
+        title: "Reset Password Error",
+        description: error.message || "Failed to send verification code",
+        variant: "destructive",
+      });
+    } finally {
+      setResetLoading(false);
     }
-    setResetLoading(false);
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 relative">
-      {/* Language Toggle - Top Right */}
-      <div className="absolute top-4 right-4 flex flex-col items-center gap-1">
-        <Button
-          onClick={toggleLanguage}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
-        >
-          <Languages size={18} />
-          <span className="text-sm font-medium">
-            {language === 'en' ? 'हिं' : 'EN'}
-          </span>
-        </Button>
-        <span className="text-sm text-gray-700 font-medium text-center px-2 py-1 bg-gray-50 rounded-md">
-          {language === 'en' ? 'If you want to change the language click above' : 'यदि आप भाषा बदलना चाहते हैं तो ऊपर क्लिक करें'}
-        </span>
-      </div>
-      
-      <Card className="w-full max-w-md bg-white">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">{t('auth.welcome')}</CardTitle>
-          <CardDescription className="text-gray-600">
-            {t('auth.subtitle')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+  const handleSignupOTPVerified = async () => {
+    try {
+      // Create user account after OTP verification
+      const { error } = await supabase.auth.signUp({
+        email: otpEmail,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) throw error;
+
+      // Sign in the user immediately after successful signup
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: otpEmail,
+        password
+      });
+
+      if (signInError) throw signInError;
+
+      toast({
+        title: "Account Created",
+        description: "Your account has been created successfully!",
+      });
+      navigate('/');
+    } catch (error: any) {
+      console.error('Error creating account:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create account",
+        variant: "destructive",
+      });
+      setCurrentFlow('auth');
+    }
+  };
+
+  const handleResetOTPVerified = () => {
+    setCurrentFlow('reset-password');
+  };
+
+  const handlePasswordResetSuccess = () => {
+    setCurrentFlow('auth');
+    setOtpEmail('');
+    setPassword('');
+    toast({
+      title: "Password Reset Complete",
+      description: "You can now sign in with your new password.",
+    });
+  };
+
+  const handleBackToAuth = () => {
+    setCurrentFlow('auth');
+    setOtpEmail('');
+    setEmail('');
+    setPassword('');
+    setPasswordErrors([]);
+  };
+
+  // Render different flows
+  const renderContent = () => {
+    switch (currentFlow) {
+      case 'signup-otp':
+        return (
+          <OTPInput
+            email={otpEmail}
+            type="signup"
+            onVerified={handleSignupOTPVerified}
+            onBack={handleBackToAuth}
+          />
+        );
+      case 'reset-otp':
+        return (
+          <OTPInput
+            email={otpEmail}
+            type="password_reset"
+            onVerified={handleResetOTPVerified}
+            onBack={handleBackToAuth}
+          />
+        );
+      case 'reset-password':
+        return (
+          <PasswordResetForm
+            email={otpEmail}
+            onSuccess={handlePasswordResetSuccess}
+            onBack={handleBackToAuth}
+          />
+        );
+      default:
+        return (
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
@@ -196,7 +273,7 @@ const Auth = () => {
                         <DialogHeader>
                           <DialogTitle>Reset Password</DialogTitle>
                           <DialogDescription>
-                            Enter your email address and we'll send you a link to reset your password.
+                            Enter your email address and we'll send you a verification code to reset your password.
                           </DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handlePasswordReset} className="space-y-4">
@@ -216,7 +293,7 @@ const Auth = () => {
                             className="w-full"
                             disabled={resetLoading}
                           >
-                            {resetLoading ? 'Sending...' : 'Send Reset Link'}
+                            {resetLoading ? 'Sending...' : 'Send OTP'}
                           </Button>
                         </form>
                       </DialogContent>
@@ -280,6 +357,43 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 relative">
+      {/* Language Toggle - Top Right */}
+      {currentFlow === 'auth' && (
+        <div className="absolute top-4 right-4 flex flex-col items-center gap-1">
+          <Button
+            onClick={toggleLanguage}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
+          >
+            <Languages size={18} />
+            <span className="text-sm font-medium">
+              {language === 'en' ? 'हिं' : 'EN'}
+            </span>
+          </Button>
+          <span className="text-sm text-gray-700 font-medium text-center px-2 py-1 bg-gray-50 rounded-md">
+            {language === 'en' ? 'If you want to change the language click above' : 'यदि आप भाषा बदलना चाहते हैं तो ऊपर क्लिक करें'}
+          </span>
+        </div>
+      )}
+      
+      <Card className="w-full max-w-md bg-white">
+        {currentFlow === 'auth' && (
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-gray-900">{t('auth.welcome')}</CardTitle>
+            <CardDescription className="text-gray-600">
+              {t('auth.subtitle')}
+            </CardDescription>
+          </CardHeader>
+        )}
+        <CardContent>
+          {renderContent()}
         </CardContent>
       </Card>
     </div>
