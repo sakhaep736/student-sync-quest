@@ -79,7 +79,7 @@ serve(async (req) => {
 
     try {
       await resend.emails.send({
-        from: 'noreply@resend.dev',
+        from: 'onboarding@resend.dev',
         to: [email],
         subject: emailSubject,
         html: emailContent,
