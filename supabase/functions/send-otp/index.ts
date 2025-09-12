@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { Resend } from 'npm:resend@2.0.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -59,32 +60,52 @@ serve(async (req) => {
       );
     }
 
+    // Initialize Resend
+    const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+
     // Send email with OTP
     const emailSubject = type === 'signup' ? 'Verify Your Email' : 'Reset Your Password';
     const emailContent = `
-      <h2>${emailSubject}</h2>
-      <p>Your verification code is: <strong style="font-size: 24px; color: #2563eb;">${otpCode}</strong></p>
-      <p>This code will expire in 2 minutes.</p>
-      <p>If you didn't request this code, please ignore this email.</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #333; margin-bottom: 20px;">${emailSubject}</h2>
+        <p style="color: #666; margin-bottom: 20px;">Your verification code is:</p>
+        <div style="background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
+          <span style="font-size: 32px; font-weight: bold; color: #2563eb; letter-spacing: 8px;">${otpCode}</span>
+        </div>
+        <p style="color: #666; margin-top: 20px;">This code will expire in 2 minutes.</p>
+        <p style="color: #999; font-size: 14px; margin-top: 30px;">If you didn't request this code, please ignore this email.</p>
+      </div>
     `;
 
-    // For demo purposes, we'll just log the OTP (in production, integrate with email service)
-    console.log(`OTP for ${email}: ${otpCode} (type: ${type})`);
-    
-    // In production, replace this with actual email sending logic
-    // Example with SendGrid, Mailgun, or other email service
-    
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'OTP sent successfully',
-        // Remove this in production - for demo only
-        otp: otpCode 
-      }), 
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+    try {
+      await resend.emails.send({
+        from: 'noreply@resend.dev',
+        to: [email],
+        subject: emailSubject,
+        html: emailContent,
+      });
+
+      console.log(`OTP sent to ${email}: ${otpCode} (type: ${type})`);
+      
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'OTP sent successfully'
+        }), 
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    } catch (emailError) {
+      console.error('Error sending email:', emailError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to send OTP email' }), 
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
 
   } catch (error) {
     console.error('Error in send-otp function:', error);
