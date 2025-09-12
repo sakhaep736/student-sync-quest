@@ -76,15 +76,18 @@ serve(async (req) => {
         <p style="color: #999; font-size: 14px; margin-top: 30px;">If you didn't request this code, please ignore this email.</p>
       </div>
     `;
+    const emailText = `Your verification code is: ${otpCode}. This code will expire in 2 minutes. If you didn't request this, please ignore this email.`;
 
     try {
-      await resend.emails.send({
-        from: 'onboarding@resend.dev',
+      const sendRes = await resend.emails.send({
+        from: 'Lovable <onboarding@resend.dev>',
         to: [email],
         subject: emailSubject,
         html: emailContent,
+        text: emailText,
       });
 
+      console.log('Resend send result:', sendRes);
       console.log(`OTP sent to ${email}: ${otpCode} (type: ${type})`);
       
       return new Response(
