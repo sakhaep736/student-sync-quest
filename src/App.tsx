@@ -19,6 +19,7 @@ import SavedJobs from "./pages/SavedJobs";
 import AccountSettings from "./pages/AccountSettings";
 import HelpSupport from "./pages/HelpSupport";
 import ResetPassword from "./pages/ResetPassword";
+import OTPDiagnostics from "./pages/OTPDiagnostics";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/account-settings" element={<AccountSettings />} />
             <Route path="/help-support" element={<HelpSupport />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/otp-diagnostics" element={<OTPDiagnostics />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

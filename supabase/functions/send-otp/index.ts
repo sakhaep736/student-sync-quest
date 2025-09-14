@@ -90,10 +90,28 @@ serve(async (req) => {
       console.log('Resend send result:', sendRes);
       console.log(`OTP sent to ${email}: ${otpCode} (type: ${type})`);
       
+      // Check for Resend API errors
+      if (sendRes.error) {
+        console.error('Resend API error:', sendRes.error);
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            error: `Email delivery failed: ${sendRes.error.message || 'Unknown provider error'}`,
+            providerError: sendRes.error
+          }), 
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
+      
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'OTP sent successfully'
+          message: 'OTP sent successfully',
+          requestId: sendRes.data?.id,
+          provider: 'resend'
         }), 
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -101,8 +119,26 @@ serve(async (req) => {
       );
     } catch (emailError) {
       console.error('Error sending email:', emailError);
+      
+      // Enhanced error details
+      let errorMessage = 'Failed to send OTP email';
+      let errorDetails = emailError;
+      
+      if (emailError.message?.includes('API key')) {
+        errorMessage = 'Invalid email service API key';
+      } else if (emailError.message?.includes('authentication')) {
+        errorMessage = 'Email service authentication failed';
+      } else if (emailError.message?.includes('rate limit')) {
+        errorMessage = 'Email service rate limit exceeded';
+      }
+      
       return new Response(
-        JSON.stringify({ error: 'Failed to send OTP email' }), 
+        JSON.stringify({ 
+          success: false,
+          error: errorMessage,
+          details: errorDetails?.message || 'Unknown error',
+          provider: 'resend'
+        }), 
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

@@ -67,19 +67,40 @@ const Auth = () => {
         body: { email, type: 'signup' }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(`Edge function error: ${error.message || 'Unknown error'}`);
+      }
+
+      if (!data?.success) {
+        const errorMsg = data?.error || 'Failed to send OTP';
+        console.error('OTP send failed:', data);
+        throw new Error(errorMsg);
+      }
 
       setOtpEmail(email);
       setCurrentFlow('signup-otp');
       toast({
         title: "OTP Sent",
-        description: "Please check your email for the verification code.",
+        description: `Verification code sent to ${email}. Check your inbox and spam folder.`,
       });
     } catch (error: any) {
       console.error('Error sending OTP:', error);
+      
+      // Enhanced error handling with specific provider errors
+      let errorDescription = error.message || "Failed to send verification code";
+      
+      if (error.message?.includes('API key is invalid')) {
+        errorDescription = "Email service configuration error. Please contact support.";
+      } else if (error.message?.includes('authentication failed')) {
+        errorDescription = "Email authentication failed. Please contact support.";
+      } else if (error.message?.includes('rate limit')) {
+        errorDescription = "Too many requests. Please wait before trying again.";
+      }
+      
       toast({
         title: "Sign Up Error",
-        description: error.message || "Failed to send verification code",
+        description: errorDescription,
         variant: "destructive",
       });
     } finally {
@@ -118,21 +139,42 @@ const Auth = () => {
         body: { email: resetEmail, type: 'password_reset' }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(`Edge function error: ${error.message || 'Unknown error'}`);
+      }
+
+      if (!data?.success) {
+        const errorMsg = data?.error || 'Failed to send reset code';
+        console.error('Password reset OTP failed:', data);
+        throw new Error(errorMsg);
+      }
 
       setOtpEmail(resetEmail);
       setCurrentFlow('reset-otp');
       setIsResetDialogOpen(false);
       setResetEmail('');
       toast({
-        title: "OTP Sent",
-        description: "Please check your email for the verification code.",
+        title: "Reset Code Sent",
+        description: `Password reset code sent to ${resetEmail}. Check your inbox and spam folder.`,
       });
     } catch (error: any) {
       console.error('Error sending reset OTP:', error);
+      
+      // Enhanced error handling
+      let errorDescription = error.message || "Failed to send verification code";
+      
+      if (error.message?.includes('API key is invalid')) {
+        errorDescription = "Email service configuration error. Please contact support.";
+      } else if (error.message?.includes('authentication failed')) {
+        errorDescription = "Email authentication failed. Please contact support.";
+      } else if (error.message?.includes('rate limit')) {
+        errorDescription = "Too many requests. Please wait before trying again.";
+      }
+      
       toast({
         title: "Reset Password Error",
-        description: error.message || "Failed to send verification code",
+        description: errorDescription,
         variant: "destructive",
       });
     } finally {
