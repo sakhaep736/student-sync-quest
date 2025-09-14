@@ -289,6 +289,10 @@ export type Database = {
         Args: { input_text: string }
         Returns: string
       }
+      test_smtp_config: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       verify_otp: {
         Args: {
           email_param: string
