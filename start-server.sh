@@ -51,7 +51,12 @@ echo "http://localhost:4173"
 echo "http://$(hostname -I | awk '{print $1}'):4173"
 echo "=========================================="
 echo ""
+echo "⚠️  FIREWALL SETUP REQUIRED:"
+echo "If you cannot access the server from outside, run:"
+echo "sudo ufw allow 4173/tcp"
+echo "sudo ufw reload"
+echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""
 
-npm run preview
+npm run preview -- --host 0.0.0.0 --port 4173
