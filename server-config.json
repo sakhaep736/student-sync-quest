@@ -1,0 +1,19 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "cors": {
+      "enabled": true,
+      "origin": "*"
+    }
+  },
+  "environment": "production",
+  "build": {
+    "outDir": "dist",
+    "minify": true
+  },
+  "preview": {
+    "port": 4173,
+    "host": "0.0.0.0"
+  }
+}
